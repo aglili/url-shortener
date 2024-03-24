@@ -1,7 +1,7 @@
 from fastapi import FastAPI,BackgroundTasks,Depends,Request,HTTPException,Response
 from starlette.responses import RedirectResponse
 from schema import LongURL,ShortenURLResponse
-from funcs import generate_short_url,check_short_url_exists,check_long_url_exists
+from funcs import generate_short_url,check_short_url_exists,check_long_url_exists,is_valid_url
 from models import URL
 from sqlalchemy.orm import Session
 from database import get_db,Base,engine
@@ -19,6 +19,8 @@ Base.metadata.create_all(bind=engine)
 
 @app.post("/shorten-link", response_model=ShortenURLResponse, status_code=201)
 def shorten_link(url: LongURL, request: Request, db: Session = Depends(get_db)):
+    if not is_valid_url(url.url):
+        raise HTTPException(status_code=400, detail="Invalid URL")
     long_url = check_long_url_exists(url.url, db)
     if long_url:
         return ShortenURLResponse(**long_url.__dict__)
@@ -44,9 +46,11 @@ def shorten_link(url: LongURL, request: Request, db: Session = Depends(get_db)):
     db.add(db_url)
     db.commit()
     db.refresh(db_url)
+    whatsapp_url = f"https://api.whatsapp.com/send?text={short_url}"
+    facebook_url = f"https://www.facebook.com/sharer/sharer.php?u={short_url}"
 
     
-    return ShortenURLResponse(**db_url.__dict__)
+    return ShortenURLResponse(short_url=short_url, url=url.url, whatsapp=whatsapp_url, facebook=facebook_url)
 
 
 

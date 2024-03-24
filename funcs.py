@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from models import URL
 from database import get_db
 from sqlalchemy.orm import Session
+from pydantic import HttpUrl
 load_dotenv()
 
 from supabase import create_client, Client
@@ -66,6 +67,13 @@ def check_long_url_exists(long_url,db:Session):
     if long_code:
         return long_code
     return None
+
+def is_valid_url(url:str):
+    try:
+        HttpUrl(url)
+        return True
+    except:
+        return False
     
 
 
