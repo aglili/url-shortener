@@ -11,3 +11,4 @@ class ShortenURLResponse(BaseModel):
     url: str
     whatsapp: Optional[str] = None
     facebook: Optional[str] = None
+    gmail: Optional[str] = None

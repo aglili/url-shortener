@@ -10,5 +10,6 @@ class URL(Base):
     short_url = Column(String, index=True)
     whatsapp = Column(String, index=True)
     facebook = Column(String, index=True)
+    gmail = Column(String, index=True)
     
 

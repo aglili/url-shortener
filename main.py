@@ -54,13 +54,14 @@ def shorten_link(url: LongURL, request: Request, db: Session = Depends(get_db)):
     
     whatsapp_url = f"https://api.whatsapp.com/send?text={short_url}"
     facebook_url = f"https://www.facebook.com/sharer/sharer.php?u={short_url}"
+    gmail_url = f"mailto:?subject=Check%20out%20this%20short%20URL&body={short_url}"
 
 
-    db_url = URL(url=url.url, short_url=short_url, whatsapp=whatsapp_url, facebook=facebook_url)
+    db_url = URL(url=url.url, short_url=short_url, whatsapp=whatsapp_url, facebook=facebook_url,gmail=gmail_url)
     db.add(db_url)
     db.commit()
     db.refresh(db_url)
-    return ShortenURLResponse(short_url=short_url, url=url.url, whatsapp=db_url.whatsapp, facebook=db_url.facebook)
+    return ShortenURLResponse(short_url=short_url, url=url.url, whatsapp=db_url.whatsapp, facebook=db_url.facebook,gmail=db_url.gmail)
 
 
 
