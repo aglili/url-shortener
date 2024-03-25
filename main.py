@@ -50,16 +50,17 @@ def shorten_link(url: LongURL, request: Request, db: Session = Depends(get_db)):
 
     base_url = str(request.base_url)
     short_url = f"{base_url}{short_code}"
-
-    db_url = URL(url=url.url, short_url=short_url)
-    db.add(db_url)
-    db.commit()
-    db.refresh(db_url)
+    
+    
     whatsapp_url = f"https://api.whatsapp.com/send?text={short_url}"
     facebook_url = f"https://www.facebook.com/sharer/sharer.php?u={short_url}"
 
-    
-    return ShortenURLResponse(short_url=short_url, url=url.url, whatsapp=whatsapp_url, facebook=facebook_url)
+
+    db_url = URL(url=url.url, short_url=short_url, whatsapp=whatsapp_url, facebook=facebook_url)
+    db.add(db_url)
+    db.commit()
+    db.refresh(db_url)
+    return ShortenURLResponse(short_url=short_url, url=url.url, whatsapp=db_url.whatsapp, facebook=db_url.facebook)
 
 
 
@@ -71,8 +72,10 @@ def redirect_to_url(short_url: str, db: Session = Depends(get_db)):
     else:
         db_url = check_short_url_exists(short_url, db)
         if db_url:
+
             return RedirectResponse(db_url.url, status_code=301)
         else:
+            print("")
             raise HTTPException(status_code=404, detail="URL not found")
         
 

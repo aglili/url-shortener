@@ -8,5 +8,7 @@ class URL(Base):
     id = Column(Integer, primary_key=True, index=True)
     url = Column(String, index=True)
     short_url = Column(String, index=True)
+    whatsapp = Column(String, index=True)
+    facebook = Column(String, index=True)
     
 
