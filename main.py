@@ -6,12 +6,21 @@ from models import URL
 from sqlalchemy.orm import Session
 from database import get_db,Base,engine
 from redis_config import RedisConfig
+from fastapi.middleware.cors import CORSMiddleware
 
 
 
 
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["POST", "GET"],
+    allow_headers=["*"],
+)
+
 redis = RedisConfig().get_redis()
 Base.metadata.create_all(bind=engine)
     
